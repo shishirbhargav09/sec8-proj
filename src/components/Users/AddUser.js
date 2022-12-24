@@ -1,20 +1,51 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-function AddUser() {
+import ErrorModal from "./ErrorModal";
+function AddUser(props) {
+  const [username, setUsername] = useState("");
+  const [age, setAge] = useState("");
+  const [error, setError] = useState();
   const addHandler = (e) => {
     e.preventDefault();
+    if(username.trim().length===0 || Number(age)<0 || age.length===0){
+      setError({
+        message: "Please Enter Valid Details"
+      })
+      return
+    }
+    console.log(username, age);
+    // console.log(username.length);
+    props.onAdduser(username,age);
+    setAge('')
+    setUsername('')
+
   };
+  const errorHandler = () => { 
+    setError()
+   }
 
   return (
-    <Container>
+   <>
+  {error && <ErrorModal msg={error.message} onConfirm={errorHandler} />}
+   <Container>
       <form onSubmit={addHandler}>
         <label htmlFor="username">Username</label>
-        <input id="username" type="text" />
+        <input
+          id="username"
+          type="text"
+          value={username}
+          onChange={(e) => {
+            setUsername(e.target.value);
+          }}
+        />
         <label htmlFor="age">Age (Years)</label>
-        <input type="number" id="age" />
+        <input type="number" id="age" 
+        value={age} onChange={(e) => {
+            setAge(e.target.value);
+          }} />
         <button type="submit">Add User</button>
       </form>
-    </Container>
+    </Container></>
   );
 }
 
@@ -25,7 +56,8 @@ const Container = styled.div`
   padding: 1rem;
   width: 90%;
   max-width: 40rem;
-
+  background-color: #fff;
+  border-radius: 10px;
   label {
     display: block;
     font-weight: bold;
@@ -44,16 +76,14 @@ const Container = styled.div`
       border-color: #4f005f;
     }
   }
-  .button {
+  button {
     font: inherit;
     border: 1px solid #4f005f;
     background: #4f005f;
     color: white;
     padding: 0.25rem 1rem;
     cursor: pointer;
-  }
 
-  button {
     &:active {
       background: #741188;
       border-color: #741188;
